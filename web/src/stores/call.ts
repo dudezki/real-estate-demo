@@ -43,8 +43,10 @@ export const useCallStore = defineStore('call', () => {
   let audioEls: HTMLMediaElement[] = []
   let attempt: AbortController | null = null
   let ring = new Ringback()
+  let noAnswer: ReturnType<typeof setTimeout> | undefined
+  const NO_ANSWER_MS = 20000 // stop ringing if the agent never joins
 
-  function stopRinging() { ring.stop(); ringing.value = false }
+  function stopRinging() { ring.stop(); ringing.value = false; clearTimeout(noAnswer) }
   // livekit-client is ~600 kB: load it only when a call starts so the landing page stays light.
   let lk: typeof import('livekit-client')
 
@@ -172,6 +174,17 @@ export const useCallStore = defineStore('call', () => {
       await r.localParticipant.setMicrophoneEnabled(true)
       if (r.state !== lk.ConnectionState.Connected) throw new Error('Could not establish the call.')
       status.value = 'connected'
+      if (ringing.value) {
+        noAnswer = setTimeout(async () => {
+          if (!ringing.value) return
+          status.value = 'ending' // so the disconnect handler doesn't report a dropped call
+          await room.value?.disconnect().catch(() => {})
+          room.value = null
+          reset()
+          error.value = 'The concierge didn\u2019t answer. Please try again in a moment.'
+          status.value = 'error'
+        }, NO_ANSWER_MS)
+      }
       timer = setInterval(() => { seconds.value++ }, 1000)
     } catch (e) {
       if (attempt?.signal.aborted) return
