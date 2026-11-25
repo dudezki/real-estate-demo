@@ -6,7 +6,7 @@
  */
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { Mic } from 'lucide-vue-next'
-import { gsap } from '@/composables/useMotion'
+import { gsap, ScrollTrigger } from '@/composables/useMotion'
 import { prefersReducedMotion } from '@/lib/utils'
 import { useCallStore } from '@/stores/call'
 import Button from '@/components/ui/Button.vue'
@@ -55,7 +55,7 @@ onMounted(async () => {
 
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
-      scrollTrigger: { trigger: root.value, start: 'top top', end: '+=520%', scrub: 0.8, pin: true, anticipatePin: 1 },
+      scrollTrigger: { trigger: root.value, start: 'top top', end: '+=520%', scrub: 0.8, pin: true, anticipatePin: 1, refreshPriority: 1 },
     })
     tl.to(q('[data-intro]'), { opacity: 0, y: -40, duration: 0.6 }, 0)
       .to(q('[data-scroll-hint]'), { opacity: 0, duration: 0.3 }, 0)
@@ -83,6 +83,11 @@ onMounted(async () => {
       .to(q('[data-chapter="3"]'), { opacity: 1, y: 0, duration: 0.3 }, 5.2)
       .to(q('[data-in-label]'), { opacity: 1, y: 0, stagger: 0.14, duration: 0.35, ease: 'power2.out' }, 5.4)
       .to({}, { duration: 0.9 })
+
+    // This trigger is created after later sections' triggers (we awaited nextTick), so sort by
+    // refreshPriority and recompute: sections below must account for this pin's spacing.
+    ScrollTrigger.sort()
+    ScrollTrigger.refresh()
 
     // Gentle life while idle: pillar lights flicker, pool shimmers.
     gsap.to(q('[data-lamp]'), { opacity: 0.55, duration: 1.6, repeat: -1, yoyo: true, ease: 'sine.inOut', stagger: 0.4 })
