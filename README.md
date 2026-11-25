@@ -10,8 +10,8 @@ Real-estate variant of the CONNECT. contact-center demo. A fictional listing pag
 - **Blueprint** (`BlueprintSection.vue`): ground-floor plan that draws itself on scroll.
 - **Voice concierge**: LiveKit agent `estate-agent` with listing facts in `backend/agent/prompt.py`; it never quotes a price.
 
-> The "Deployment (live)" section below is inherited from CONNECT. and does **not** describe this project yet:
-> this project has no Vercel site or LiveKit Cloud agent of its own. Dev server: http://localhost:5299.
+> **Live:** https://haven-real-estate-demo.vercel.app (Vercel project `haven-real-estate-demo`). Dev server: http://localhost:5299.
+> The voice concierge needs its own LiveKit Cloud project (the free plan allows one agent per project).
 
 
 The hero CTA opens a floating call dock and connects the visitor to an AI agent over WebRTC.
@@ -59,14 +59,11 @@ cd web && npm run dev
 4. Agent logs show the job dispatched; if no agent joins, check the worker is registered under `AGENT_NAME`.
 
 ## Deployment (live)
-- **Site + token API:** https://contact-center-demo-beta.vercel.app — Vercel serves `web/dist` and runs
-  `api/index.py` (FastAPI from `backend/app`, deps in root `requirements.txt`) as a Python function; `/api/*`
-  is rewritten to it (same origin). Config: `vercel.json`, `.vercelignore`. Env vars live in the Vercel dashboard.
-- **Agent:** LiveKit Cloud agent `CA_EFmxcqtWfwVu`, region `ap-south`, built from `backend/Dockerfile`
-  (`backend/livekit.toml`). Redeploy: `cd backend && lk agent deploy`. Logs: `lk agent logs`.
-- Redeploy web/API: `vercel deploy --prod`.
-- Known limit: the token rate limiter is in-memory per serverless instance, so limits are per instance,
-  not global. The 60-second call cap is enforced by the agent regardless. Move to Redis/Upstash for strict limits.
+- **Site + token API:** https://haven-real-estate-demo.vercel.app, with the same Vercel setup as CONNECT.
+  (`vercel.json`, `api/index.py`, root `requirements.txt`). `AGENT_NAME=estate-agent`.
+- **Agent:** LiveKit Cloud, deployed from `backend/` with `lk agent create` (pending its own LiveKit project).
+- Redeploy: `vercel deploy --prod` (site/API) and `cd backend && lk agent deploy` (agent).
+- Known limit: the rate limiter is in-memory per serverless instance.
 
 ## Security
 - API secret/key only in `.env` (git-ignored); the browser receives a JWT only.
