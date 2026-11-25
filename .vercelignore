@@ -1,0 +1,10 @@
+.env
+.env.*
+**/node_modules
+**/.venv
+**/__pycache__
+backend/agent
+backend/tests
+backend/uv.lock
+backend/pyproject.toml
+design-system

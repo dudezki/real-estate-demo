@@ -1,0 +1,25 @@
+[project]
+name = "haven-backend"
+version = "0.1.0"
+description = "HAVEN. — FastAPI token service and LiveKit voice agent worker"
+authors = [{ name = "Lucky John Faderon" }]
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic-settings>=2.4",
+  "livekit-api>=1.0",
+  "livekit-agents[silero,turn-detector]>=1.2",
+  "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "pyjwt>=2.15.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

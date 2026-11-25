@@ -1,0 +1,4 @@
+# API-only dependencies for the Vercel function (the agent worker uses backend/pyproject.toml).
+fastapi>=0.115,<1
+pydantic-settings>=2.4,<3
+livekit-api>=1.0,<2

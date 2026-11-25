@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource/instrument-serif';
+
+/* HAVEN. design tokens — warm ink / paper with a single amber signal colour. */
+@theme {
+  --color-ink: #0b0a09;
+  --color-ink-2: #141210;
+  --color-ink-3: #1d1a17;
+  --color-paper: #f1ece3;
+  --color-paper-dim: #b9b1a4; /* 8.9:1 on ink */
+  --color-mute: #8f877b; /* 5.4:1 on ink */
+  --color-line: rgb(241 236 227 / 0.12);
+  --color-signal: #e8a24a;
+  --color-signal-deep: #c47f26;
+  --color-danger: #ef6b5b;
+  --color-ok: #7fc8a0;
+
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html { background: var(--color-ink); color: var(--color-paper); -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--font-sans); line-height: 1.55; overflow-x: hidden; }
+  ::selection { background: var(--color-signal); color: var(--color-ink); }
+  :focus-visible { outline: 2px solid var(--color-signal); outline-offset: 3px; border-radius: 4px; }
+  button, a, [role='button'] { cursor: pointer; }
+}
+
+@layer components {
+  .eyebrow { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-mute); }
+  .display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; line-height: 0.98; }
+  .container-x { width: min(100% - 2.5rem, 78rem); margin-inline: auto; }
+}
+
+/* Animated "typing" dots after status labels */
+.dots::after { content: ''; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.4s steps(1, end) infinite; }
+@keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+
+/* Call avatar: expanding rings while ringing, soft glow while the agent speaks */
+.avatar::before, .avatar::after { content: ''; position: absolute; inset: -1px; border-radius: 9999px; border: 1px solid var(--color-signal); opacity: 0; pointer-events: none; }
+.avatar[data-state='ringing']::before { animation: ring-out 1.6s var(--ease-out-expo) infinite; }
+.avatar[data-state='ringing']::after { animation: ring-out 1.6s var(--ease-out-expo) 0.4s infinite; }
+.avatar[data-state='speaking'] { box-shadow: 0 0 0 3px rgb(232 162 74 / 0.25), 0 0 24px rgb(232 162 74 / 0.35); transition: box-shadow 0.3s; }
+@keyframes ring-out { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.7); opacity: 0; } }
+
+/* Primary CTA: a slow "incoming signal" halo */
+.cta-pulse { position: relative; isolation: isolate; }
+.cta-pulse::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--color-signal); z-index: -1; animation: cta-halo 2.8s ease-out infinite; }
+@keyframes cta-halo { 0% { transform: scale(1); opacity: 0.45; } 70%, 100% { transform: scale(1.18, 1.45); opacity: 0; } }
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
