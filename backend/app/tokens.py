@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import timedelta
 
@@ -27,7 +28,10 @@ def issue_token(s: Settings) -> dict:
         )
         .with_room_config(
             api.RoomConfiguration(
-                agents=[api.RoomAgentDispatch(agent_name=s.agent_name)],
+                agents=[api.RoomAgentDispatch(
+                    agent_name=s.agent_name,
+                    metadata=json.dumps({"persona": s.agent_persona}) if s.agent_persona else "",
+                )],
                 max_participants=3,  # visitor + agent + headroom
                 empty_timeout=20,
                 departure_timeout=10,

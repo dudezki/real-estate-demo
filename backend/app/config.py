@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     livekit_api_secret: str
 
     agent_name: str = "estate-agent"
+    agent_persona: str = ""  # sent to the shared agent as dispatch metadata, e.g. "haven"
     token_ttl_seconds: int = 600  # token must be used to connect within 10 minutes
     allowed_origins: str = "http://localhost:5299,http://127.0.0.1:5299"
 

@@ -9,7 +9,7 @@ dependencies = [
   "uvicorn[standard]>=0.30",
   "pydantic-settings>=2.4",
   "livekit-api>=1.0",
-  "livekit-agents[silero,turn-detector]>=1.2",
+  
   "python-dotenv>=1.0",
 ]
 

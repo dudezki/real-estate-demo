@@ -8,10 +8,12 @@ Real-estate variant of the CONNECT. contact-center demo. A fictional listing pag
   house: gate opens → façade parts labelled → camera pushes through the front door → interior rooms labelled.
   Narrow screens show labels as chips; reduced-motion users get a static, labelled version.
 - **Blueprint** (`BlueprintSection.vue`): ground-floor plan that draws itself on scroll.
-- **Voice concierge**: LiveKit agent `estate-agent` with listing facts in `backend/agent/prompt.py`; it never quotes a price.
+- **Voice concierge**: served by the **shared** LiveKit agent `connect-agent`, which lives in the
+  `contact-center-demo` repo (`backend/agent/haven_prompt.py`). This site's token service sends
+  `{"persona": "haven"}` as dispatch metadata (`AGENT_PERSONA=haven`). The LiveKit workspace allows one
+  deployed agent, so both demos share it; this repo contains no agent code.
 
 > **Live:** https://haven-real-estate-demo.vercel.app (Vercel project `haven-real-estate-demo`). Dev server: http://localhost:5299.
-> The voice concierge needs its own LiveKit Cloud project (the free plan allows one agent per project).
 
 
 The hero CTA opens a floating call dock and connects the visitor to an AI agent over WebRTC.
@@ -60,9 +62,10 @@ cd web && npm run dev
 
 ## Deployment (live)
 - **Site + token API:** https://haven-real-estate-demo.vercel.app, with the same Vercel setup as CONNECT.
-  (`vercel.json`, `api/index.py`, root `requirements.txt`). `AGENT_NAME=estate-agent`.
-- **Agent:** LiveKit Cloud, deployed from `backend/` with `lk agent create` (pending its own LiveKit project).
-- Redeploy: `vercel deploy --prod` (site/API) and `cd backend && lk agent deploy` (agent).
+  (`vercel.json`, `api/index.py`, root `requirements.txt`). `AGENT_NAME=connect-agent`, `AGENT_PERSONA=haven`.
+- **Agent:** shared CONNECT. agent `CA_EFmxcqtWfwVu` (LiveKit Cloud, ap-south). Change the concierge persona in
+  `contact-center-demo/backend/agent/haven_prompt.py`, then `lk agent deploy` from that repo's `backend/`.
+- Redeploy: `vercel deploy --prod` (site/API).
 - Known limit: the rate limiter is in-memory per serverless instance.
 
 ## Security
